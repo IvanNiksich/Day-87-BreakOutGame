@@ -26,10 +26,20 @@
 
 import turtle
 
-# Bar size
+# Bar definitions
 BAR_X = 160
 BAR_Y = 10
 BAR_COLOUR = 'blue'
+
+# Blocks definitions
+BLOCK_X = 80
+BLOCK_Y = 30
+BLOCK_COLOUR_1 = 'green'
+BLOCK_COLOUR_EDGE_1 = 'light green'
+BLOCK_COLOUR_2 = 'dark orange'
+BLOCK_COLOUR_EDGE_2 = 'orange'
+BLOCK_COLOUR_3 = 'firebrick'
+BLOCK_COLOUR_EDGE_3 = 'indian red'
 
 # Screen size
 WIDTH = 800
@@ -113,19 +123,60 @@ height = screen.window_height()
 print(f"Window width: {width} pixels")
 print(f"Window height: {height} pixels")
 
-
-# Set up the turtles
+# TURTLES CONFIG
+# Set up the bar turtle
 bar_turtle = turtle.Turtle()
 bar_turtle.pensize(2)
 bar_turtle.color(BAR_COLOUR)
 bar_turtle.hideturtle()
 bar_turtle.speed(0)  # Set the turtle speed to the fastest
 
+# Set up block turtles
+block_turtle_green = []
+block_turtle_orange = []
+block_turtle_red = []
+
+for i in range(10):
+    block_turtle_green.append("")
+    block_turtle_orange.append("")
+    block_turtle_red.append("")
+
+for i in range(10):
+    block_turtle_green[i] = turtle.Turtle()
+    block_turtle_green[i].pensize(4)
+    block_turtle_green[i].color(BLOCK_COLOUR_EDGE_1)
+    block_turtle_green[i].hideturtle()
+    block_turtle_green[i].speed(0)
+
+    block_turtle_orange[i] = turtle.Turtle()
+    block_turtle_orange[i].pensize(4)
+    block_turtle_orange[i].color(BLOCK_COLOUR_EDGE_2)
+    block_turtle_orange[i].hideturtle()
+    block_turtle_orange[i].speed(0)
+
+    block_turtle_red[i] = turtle.Turtle()
+    block_turtle_red[i].pensize(4)
+    block_turtle_red[i].color(BLOCK_COLOUR_EDGE_3)
+    block_turtle_red[i].hideturtle()
+    block_turtle_red[i].speed(0)
+
+# DRAWING
 # Draw the bar in the starting position
 turtle_move(-(BAR_X / 2), -((HEIGHT / 2) - 60), bar_turtle)
-
-# Draw the bar
 draw_rectangle(BAR_X, BAR_Y, BAR_COLOUR, bar_turtle)
+screen.update()
+
+# Draw the blocks
+for i in range(10):
+    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 0, block_turtle_green[i])
+    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_1, block_turtle_green[i])
+
+    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 34, block_turtle_orange[i])
+    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_2, block_turtle_orange[i])
+
+    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 68, block_turtle_red[i])
+    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_3, block_turtle_red[i])
+
 screen.update()
 
 # Listen for left and right arrow keys
