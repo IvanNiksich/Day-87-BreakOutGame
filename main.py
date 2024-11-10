@@ -41,6 +41,10 @@ BLOCK_COLOUR_EDGE_2 = 'orange'
 BLOCK_COLOUR_3 = 'firebrick'
 BLOCK_COLOUR_EDGE_3 = 'indian red'
 
+# Ball definition
+BALL_COLOUR = 'red'
+BALL_RADIUS = 10
+
 # Screen size
 WIDTH = 800
 HEIGHT = 600
@@ -64,6 +68,14 @@ def draw_rectangle(rectangle_width, rectangle_height, rectangle_colour, my_turtl
         my_turtle.forward(rectangle_height)    # Draw the height
         my_turtle.right(90)    # Turn right
         my_turtle.end_fill()    # End filling the shape
+    return
+
+
+def draw_ball(ball_radius, ball_colour, my_turtle):
+    my_turtle.color(ball_colour)
+    my_turtle.begin_fill()
+    my_turtle.circle(radius=-ball_radius)
+    my_turtle.end_fill()
     return
 
 
@@ -136,6 +148,11 @@ block_turtle_green = []
 block_turtle_orange = []
 block_turtle_red = []
 
+# Set up ball turtle
+ball_turtle = turtle.Turtle()
+bar_turtle.hideturtle()
+bar_turtle.speed(0)
+
 for i in range(10):
     block_turtle_green.append("")
     block_turtle_orange.append("")
@@ -177,7 +194,10 @@ for i in range(10):
     turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 68, block_turtle_red[i])
     draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_3, block_turtle_red[i])
 
-screen.update()
+# Draw the ball in initial place
+turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
+draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
+
 
 # Listen for left and right arrow keys
 screen.listen()  # Start listening for keyboard events
