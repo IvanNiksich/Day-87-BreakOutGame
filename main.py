@@ -23,6 +23,16 @@
 #   There are a number of predefined numbers.
 #   Every time the ball gets down the line of the bar the player looses a life.
 
+# Bouncing:
+#   when bouncing against the sides and top, invert angle
+#   when bouncing against blocks invert the angle
+#   When bouncing against bar define a function to increase inverted angle
+
+# Create a grid to define the zones of each block to erase them on bounce, and to know the interception between ball and sides and top
+
+
+
+
 
 import turtle
 
@@ -198,6 +208,7 @@ for i in range(10):
 turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
 draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
 
+screen.update()
 
 # Listen for left and right arrow keys
 screen.listen()  # Start listening for keyboard events
