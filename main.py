@@ -31,15 +31,14 @@
 # Create a grid to define the zones of each block to erase them on bounce, and to know the interception between ball and sides and top
 
 
-
-
-
 import turtle
 
+# DEFINITIONS:
 # Bar definitions
 BAR_X = 160
 BAR_Y = 10
 BAR_COLOUR = 'blue'
+BAR_STEP = 10
 
 # Blocks definitions
 BLOCK_X = 80
@@ -58,6 +57,11 @@ BALL_RADIUS = 10
 # Screen size
 WIDTH = 800
 HEIGHT = 600
+
+LEFT_EDGE = -WIDTH/2
+RIGHT_EDGE = WIDTH/2
+TOP_EDGE = HEIGHT/2
+BOTTOM_EDGE = -HEIGHT/2
 
 
 def turtle_move(x_pos, y_pos, my_turtle):
@@ -94,7 +98,7 @@ def move_left():
     disable_key_listening()
     my_turtle = bar_turtle
     if my_turtle.xcor() >= (-(WIDTH/2)):
-        my_turtle.setx(my_turtle.xcor() - 20)  # Move the turtle 20 units to the left
+        my_turtle.setx(my_turtle.xcor() - BAR_STEP)  # Move the turtle 20 units to the left
         my_turtle.clear()
         draw_rectangle(BAR_X, BAR_Y, BAR_COLOUR, my_turtle)
         screen.update()
@@ -106,7 +110,7 @@ def move_right():
     disable_key_listening()
     my_turtle = bar_turtle
     if my_turtle.xcor() < ((WIDTH/2) - BAR_X):
-        my_turtle.setx(my_turtle.xcor() + 20)  # Move the turtle 20 units to the right
+        my_turtle.setx(my_turtle.xcor() + BAR_STEP)  # Move the turtle 20 units to the right
         my_turtle.clear()
         draw_rectangle(BAR_X, BAR_Y, BAR_COLOUR, my_turtle)
         screen.update()
@@ -126,6 +130,52 @@ def enable_key_listening():
     screen.onkey(move_left, "Left")  # Enable the Left arrow key
     screen.onkey(move_right, "Right")  # Enable the Right arrow key
     return
+
+
+def move_ball(my_turtle):
+    angle = my_turtle.heading()
+    angle = check_restrictions(my_turtle=my_turtle, angle=angle)
+    # print(angle)
+    my_turtle.penup()
+    my_turtle.setheading(angle)
+    my_turtle.forward(5)
+    my_turtle.pendown()
+    my_turtle.clear()
+    draw_ball(BALL_RADIUS, BALL_COLOUR, my_turtle)
+    screen.update()
+    screen.ontimer(lambda: move_ball(my_turtle), 20)
+    return
+
+
+def check_restrictions(my_turtle, angle):
+    # Check laterals
+    if my_turtle.xcor() <= LEFT_EDGE:
+        if 90 < angle < 180:
+            reflected_angle = 180 - angle
+            return reflected_angle
+        elif 180 < angle < 270:
+            reflected_angle = 180 - angle + 360
+            return reflected_angle
+        return angle
+
+    if my_turtle.xcor() >= RIGHT_EDGE:
+        if 0 < angle < 90:
+            reflected_angle = 180 - angle
+            return reflected_angle
+        elif 270 < angle < 360:
+            reflected_angle = 540 - angle
+            return reflected_angle
+        return angle
+
+    if (my_turtle.ycor() + BALL_RADIUS) >= TOP_EDGE:
+        angle = 360 - angle
+        return angle
+
+    if (my_turtle.ycor() + BALL_RADIUS) <= BOTTOM_EDGE:
+        angle = 360 - angle
+        return angle
+
+    return angle
 
 
 # MAIN
@@ -153,15 +203,16 @@ bar_turtle.color(BAR_COLOUR)
 bar_turtle.hideturtle()
 bar_turtle.speed(0)  # Set the turtle speed to the fastest
 
+# Set up ball turtle
+ball_turtle = turtle.Turtle()
+ball_turtle.hideturtle()
+ball_turtle.speed(0)
+
 # Set up block turtles
 block_turtle_green = []
 block_turtle_orange = []
 block_turtle_red = []
 
-# Set up ball turtle
-ball_turtle = turtle.Turtle()
-bar_turtle.hideturtle()
-bar_turtle.speed(0)
 
 for i in range(10):
     block_turtle_green.append("")
@@ -187,6 +238,20 @@ for i in range(10):
     block_turtle_red[i].hideturtle()
     block_turtle_red[i].speed(0)
 
+# Generate edges for defining zones
+vertical_edges = []
+horizontal_edges = []
+
+# Vertical edges in order: v1 = -320, v2 = -240, v3 = -160, v4 = -80, v5 = 0, v6 = 80, v7 = 160, v8 = 240, v9 = 320
+for i in range(9):
+    vertical_edges.append(-(WIDTH / 2) + ((i + 1) * BLOCK_X))
+print(vertical_edges)
+
+# Horizontal edges in order: h1 = 0, h2 = 34, h3 = 68
+for i in range(3):
+    horizontal_edges.append(i * 34)
+print(horizontal_edges)
+
 # DRAWING
 # Draw the bar in the starting position
 turtle_move(-(BAR_X / 2), -((HEIGHT / 2) - 60), bar_turtle)
@@ -207,7 +272,7 @@ for i in range(10):
 # Draw the ball in initial place
 turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
 draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
-
+ball_turtle.setheading(30)
 screen.update()
 
 # Listen for left and right arrow keys
@@ -215,5 +280,7 @@ screen.listen()  # Start listening for keyboard events
 screen.onkeypress(move_left, "Left")  # Bind the left arrow key to the move_left function
 screen.onkeypress(move_right, "Right")  # Bind the right arrow key to the move_right function
 
+move_ball(my_turtle=ball_turtle)
+screen.update()
 # Keep the window open
-turtle.done()
+screen.mainloop()
