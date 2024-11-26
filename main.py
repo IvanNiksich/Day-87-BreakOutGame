@@ -133,6 +133,11 @@ def enable_key_listening():
 
 
 def move_ball(my_turtle):
+    winning = verify_winning()
+    if winning is True:
+        # Show winning message to the user.
+        print(f"Winning is {winning}")
+        return
     angle = my_turtle.heading()
     angle = check_restrictions(my_turtle=my_turtle, angle=angle)
     # print(angle)
@@ -143,13 +148,13 @@ def move_ball(my_turtle):
     my_turtle.clear()
     draw_ball(BALL_RADIUS, BALL_COLOUR, my_turtle)
     screen.update()
-    screen.ontimer(lambda: move_ball(my_turtle), 20)
+    screen.ontimer(lambda: move_ball(my_turtle), 5)
     return
 
 
 def check_restrictions(my_turtle, angle):
     # Check laterals
-    if my_turtle.xcor() <= LEFT_EDGE:
+    if (my_turtle.xcor() - (BALL_RADIUS / 2)) <= LEFT_EDGE:
         if 90 < angle < 180:
             reflected_angle = 180 - angle
             return reflected_angle
@@ -158,7 +163,7 @@ def check_restrictions(my_turtle, angle):
             return reflected_angle
         return angle
 
-    if my_turtle.xcor() >= RIGHT_EDGE:
+    if (my_turtle.xcor() + (BALL_RADIUS / 2)) >= RIGHT_EDGE:
         if 0 < angle < 90:
             reflected_angle = 180 - angle
             return reflected_angle
@@ -171,11 +176,53 @@ def check_restrictions(my_turtle, angle):
         angle = 360 - angle
         return angle
 
-    if (my_turtle.ycor() + BALL_RADIUS) <= BOTTOM_EDGE:
+    if (my_turtle.ycor() - BALL_RADIUS) <= BOTTOM_EDGE:
         angle = 360 - angle
         return angle
 
+    # Check blocks: goes through all the block columns to check the height to see if the ball is in contact with
+    # one of the blocks
+    for j in range(11):
+        if vertical_edges[j] < (my_turtle.xcor() + (BALL_RADIUS / 2)) <= vertical_edges[(j + 1)]:
+            # Checks green blocks
+            if (horizontal_edges[0] < my_turtle.ycor() < horizontal_edges[1]) and (block_turtle_green[j] != ""):
+                block_turtle_green[j].clear()   # if the ball is hitting the j-green-block it gets cleared
+                block_turtle_green[j] = ""  # The associated turtle is replaced with "" to check the winning condition
+                angle = 360 - angle
+                return angle
+            # Checks orange blocks
+            if (horizontal_edges[1] < my_turtle.ycor() < horizontal_edges[2]) and (block_turtle_orange[j] != ""):
+                block_turtle_orange[j].clear()
+                block_turtle_orange[j] = ""
+                angle = 360 - angle
+                return angle
+            # Checks red blocks
+            if (horizontal_edges[2] < my_turtle.ycor() < horizontal_edges[3]) and (block_turtle_red[j] != ""):
+                block_turtle_red[j].clear()
+                block_turtle_red[j] = ""
+                angle = 360 - angle
+                return angle
+
+    # Check bar:
+    if bar_turtle.ycor() <= my_turtle.ycor() <= (bar_turtle.ycor() + BALL_RADIUS):
+        if bar_turtle.xcor() <= my_turtle.xcor() < (bar_turtle.xcor() + (BAR_X/3)):
+            angle = 360 - angle
+            return angle
+        if bar_turtle.xcor() + (BAR_X/3) <= my_turtle.xcor() <= (bar_turtle.xcor() + (BAR_X * 2/3)):
+            angle = 360 - angle
+            return angle
+        if bar_turtle.xcor() + (BAR_X * 2/3) < my_turtle.xcor() <= (bar_turtle.xcor() + BAR_X):
+            angle = 360 - angle
+            return angle
+
     return angle
+
+
+def verify_winning():
+    are_all_empty = all(element == "" for element in block_turtle_green) and \
+                    all(element == "" for element in block_turtle_orange) and \
+                    all(element == "" for element in block_turtle_red)
+    return are_all_empty
 
 
 # MAIN
@@ -200,7 +247,7 @@ print(f"Window height: {height} pixels")
 bar_turtle = turtle.Turtle()
 bar_turtle.pensize(2)
 bar_turtle.color(BAR_COLOUR)
-bar_turtle.hideturtle()
+# bar_turtle.hideturtle()
 bar_turtle.speed(0)  # Set the turtle speed to the fastest
 
 # Set up ball turtle
@@ -242,14 +289,15 @@ for i in range(10):
 vertical_edges = []
 horizontal_edges = []
 
-# Vertical edges in order: v1 = -320, v2 = -240, v3 = -160, v4 = -80, v5 = 0, v6 = 80, v7 = 160, v8 = 240, v9 = 320
-for i in range(9):
-    vertical_edges.append(-(WIDTH / 2) + ((i + 1) * BLOCK_X))
+# Vertical edges in order: v0 = -400, v1 = -320, v2 = -240, v3 = -160, v4 = -80, v5 = 0, v6 = 80, v7 = 160,
+# v8 = 240, v9 = 320, v10 = 400
+for i in range(11):
+    vertical_edges.append(-(WIDTH / 2) + (i * BLOCK_X))
 print(vertical_edges)
 
-# Horizontal edges in order: h1 = 0, h2 = 34, h3 = 68
-for i in range(3):
-    horizontal_edges.append(i * 34)
+# Horizontal edges in order: h0 = -34, h1 = 0, h2 = 34, h3 = 68
+for i in range(4):
+    horizontal_edges.append(i * 34 - 34)
 print(horizontal_edges)
 
 # DRAWING

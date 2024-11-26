@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5dab68cb-d654-478b-831e-5d2980c4e380" name="Changes" comment="Bouncing rules added.">
+    <list default="true" id="5dab68cb-d654-478b-831e-5d2980c4e380" name="Changes" comment="Added move_ball and started on check restrictions.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -109,13 +109,22 @@
       <option name="project" value="LOCAL" />
       <updated>1731431870207</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added move_ball and started on check restrictions.">
+      <option name="closed" value="true" />
+      <created>1732554708218</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1732554708218</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit. Working on bar movement." />
     <MESSAGE value="Bar finished. Starting on blocks." />
     <MESSAGE value="Bouncing rules added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Bouncing rules added." />
+    <MESSAGE value="Added move_ball and started on check restrictions." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added move_ball and started on check restrictions." />
   </component>
 </project>
