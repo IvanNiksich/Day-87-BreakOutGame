@@ -32,6 +32,9 @@
 
 
 import turtle
+from tkinter import messagebox
+import datetime as dt
+
 
 # DEFINITIONS:
 # Bar definitions
@@ -132,53 +135,66 @@ def enable_key_listening():
     return
 
 
-def move_ball(my_turtle):
-    winning = verify_winning()
-    if winning is True:
-        # Show winning message to the user.
-        print(f"Winning is {winning}")
-        return
-    angle = my_turtle.heading()
-    angle = check_restrictions(my_turtle=my_turtle, angle=angle)
-    # print(angle)
+def move_ball(my_turtle, my_angle):
+    # Set up my turtle to draw the new ball
     my_turtle.penup()
-    my_turtle.setheading(angle)
+    my_turtle.setheading(my_angle)
     my_turtle.forward(5)
     my_turtle.pendown()
+    # Delete the last draw of the ball
     my_turtle.clear()
+    # Draw new ball in new position
     draw_ball(BALL_RADIUS, BALL_COLOUR, my_turtle)
     screen.update()
-    screen.ontimer(lambda: move_ball(my_turtle), 5)
+
     return
 
 
-def check_restrictions(my_turtle, angle):
+def check_restrictions(my_turtle, my_angle, my_lives):
     # Check laterals
     if (my_turtle.xcor() - (BALL_RADIUS / 2)) <= LEFT_EDGE:
-        if 90 < angle < 180:
-            reflected_angle = 180 - angle
-            return reflected_angle
-        elif 180 < angle < 270:
-            reflected_angle = 180 - angle + 360
-            return reflected_angle
-        return angle
+        if 90 < my_angle < 180:
+            reflected_angle = 180 - my_angle
+            return reflected_angle, my_lives
+        elif 180 < my_angle < 270:
+            reflected_angle = 180 - my_angle + 360
+            return reflected_angle, my_lives
+        return my_angle, my_lives
 
     if (my_turtle.xcor() + (BALL_RADIUS / 2)) >= RIGHT_EDGE:
-        if 0 < angle < 90:
-            reflected_angle = 180 - angle
-            return reflected_angle
-        elif 270 < angle < 360:
-            reflected_angle = 540 - angle
-            return reflected_angle
-        return angle
+        if 0 < my_angle < 90:
+            reflected_angle = 180 - my_angle
+            return reflected_angle, my_lives
+        elif 270 < my_angle < 360:
+            reflected_angle = 540 - my_angle
+            return reflected_angle, my_lives
+        return my_angle, my_lives
 
     if (my_turtle.ycor() + BALL_RADIUS) >= TOP_EDGE:
-        angle = 360 - angle
-        return angle
+        my_angle = 360 - my_angle
+        return my_angle, my_lives
 
     if (my_turtle.ycor() - BALL_RADIUS) <= BOTTOM_EDGE:
-        angle = 360 - angle
-        return angle
+        # my_angle = 360 - my_angle
+        my_lives -= 1
+
+        if my_lives < 0:
+            messagebox.showinfo("You lost", "You run out of lives. Try again.")
+            # Restart the game initial conditions to play a new game
+            quit()
+
+        # Print lives remaining
+        lives_turtle.clear()
+        lives_turtle.write(f"Lives: {my_lives}", align="center", font=("Arial", 16, "normal"))
+
+        my_angle = 30
+        ball_turtle.clear()
+        bar_turtle.clear()
+        initial_draw_ball()
+        initial_draw_bar()
+
+
+        return my_angle, my_lives
 
     # Check blocks: goes through all the block columns to check the height to see if the ball is in contact with
     # one of the blocks
@@ -188,34 +204,34 @@ def check_restrictions(my_turtle, angle):
             if (horizontal_edges[0] < my_turtle.ycor() < horizontal_edges[1]) and (block_turtle_green[j] != ""):
                 block_turtle_green[j].clear()   # if the ball is hitting the j-green-block it gets cleared
                 block_turtle_green[j] = ""  # The associated turtle is replaced with "" to check the winning condition
-                angle = 360 - angle
-                return angle
+                my_angle = 360 - my_angle
+                return my_angle, my_lives
             # Checks orange blocks
             if (horizontal_edges[1] < my_turtle.ycor() < horizontal_edges[2]) and (block_turtle_orange[j] != ""):
                 block_turtle_orange[j].clear()
                 block_turtle_orange[j] = ""
-                angle = 360 - angle
-                return angle
+                my_angle = 360 - my_angle
+                return my_angle, my_lives
             # Checks red blocks
             if (horizontal_edges[2] < my_turtle.ycor() < horizontal_edges[3]) and (block_turtle_red[j] != ""):
                 block_turtle_red[j].clear()
                 block_turtle_red[j] = ""
-                angle = 360 - angle
-                return angle
+                my_angle = 360 - my_angle
+                return my_angle, my_lives
 
     # Check bar:
     if bar_turtle.ycor() <= my_turtle.ycor() <= (bar_turtle.ycor() + BALL_RADIUS):
         if bar_turtle.xcor() <= my_turtle.xcor() < (bar_turtle.xcor() + (BAR_X/3)):
-            angle = 360 - angle
-            return angle
+            my_angle = 360 - my_angle
+            return my_angle, my_lives
         if bar_turtle.xcor() + (BAR_X/3) <= my_turtle.xcor() <= (bar_turtle.xcor() + (BAR_X * 2/3)):
-            angle = 360 - angle
-            return angle
+            my_angle = 360 - my_angle
+            return my_angle, my_lives
         if bar_turtle.xcor() + (BAR_X * 2/3) < my_turtle.xcor() <= (bar_turtle.xcor() + BAR_X):
-            angle = 360 - angle
-            return angle
+            my_angle = 360 - my_angle
+            return my_angle, my_lives
 
-    return angle
+    return my_angle, my_lives
 
 
 def verify_winning():
@@ -223,6 +239,42 @@ def verify_winning():
                     all(element == "" for element in block_turtle_orange) and \
                     all(element == "" for element in block_turtle_red)
     return are_all_empty
+
+
+def delay(milliseconds):
+    target_time = dt.datetime.now() + dt.timedelta(milliseconds=milliseconds)
+    while dt.datetime.now() < target_time:
+        pass
+    return
+
+
+def initial_draw_bar():
+    # DRAWING
+    # Draw the bar in the starting position
+    turtle_move(-(BAR_X / 2), -((HEIGHT / 2) - 60), bar_turtle)
+    draw_rectangle(BAR_X, BAR_Y, BAR_COLOUR, bar_turtle)
+    screen.update()
+    return
+
+
+def draw_blocks():
+    for i in range(10):
+        turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 0, block_turtle_green[i])
+        draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_1, block_turtle_green[i])
+
+        turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 34, block_turtle_orange[i])
+        draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_2, block_turtle_orange[i])
+
+        turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 68, block_turtle_red[i])
+        draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_3, block_turtle_red[i])
+    return
+
+
+def initial_draw_ball():
+    turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
+    draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
+    ball_turtle.setheading(30)
+    return
 
 
 # MAIN
@@ -259,7 +311,6 @@ ball_turtle.speed(0)
 block_turtle_green = []
 block_turtle_orange = []
 block_turtle_red = []
-
 
 for i in range(10):
     block_turtle_green.append("")
@@ -300,27 +351,28 @@ for i in range(4):
     horizontal_edges.append(i * 34 - 34)
 print(horizontal_edges)
 
-# DRAWING
-# Draw the bar in the starting position
-turtle_move(-(BAR_X / 2), -((HEIGHT / 2) - 60), bar_turtle)
-draw_rectangle(BAR_X, BAR_Y, BAR_COLOUR, bar_turtle)
-screen.update()
+# DRAW
+
+# Draw the ball in the initial position
+initial_draw_bar()
 
 # Draw the blocks
-for i in range(10):
-    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 0, block_turtle_green[i])
-    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_1, block_turtle_green[i])
-
-    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 34, block_turtle_orange[i])
-    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_2, block_turtle_orange[i])
-
-    turtle_move(-(WIDTH / 2) + (i * BLOCK_X), 68, block_turtle_red[i])
-    draw_rectangle(BLOCK_X, BLOCK_Y, BLOCK_COLOUR_3, block_turtle_red[i])
+draw_blocks()
 
 # Draw the ball in initial place
-turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
-draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
-ball_turtle.setheading(30)
+initial_draw_ball()
+
+# Lives set up
+lives_turtle = turtle.Turtle()
+lives_turtle.hideturtle()
+# Position the turtle
+lives_turtle.penup()
+lives_turtle.goto((LEFT_EDGE + 50), (TOP_EDGE - 50))  # Move to a starting position
+# Write the message
+lives_remaining = 3
+lives_turtle.write(f"Lives: {lives_remaining}", align="center", font=("Arial", 16, "normal"))
+
+
 screen.update()
 
 # Listen for left and right arrow keys
@@ -328,7 +380,30 @@ screen.listen()  # Start listening for keyboard events
 screen.onkeypress(move_left, "Left")  # Bind the left arrow key to the move_left function
 screen.onkeypress(move_right, "Right")  # Bind the right arrow key to the move_right function
 
-move_ball(my_turtle=ball_turtle)
-screen.update()
+winning = False
+while not winning:
+    delay(20)
+
+    angle = ball_turtle.heading()
+    # Check if the ball is overlapping with edges, top, bottom, or the bar. And modify angle accordingly.
+    angle, lives_remaining = check_restrictions(my_turtle=ball_turtle, my_angle=angle, my_lives=lives_remaining)
+
+    # Print lives remaining
+    lives_turtle.clear()
+    lives_turtle.write(f"Lives: {lives_remaining}", align="center", font=("Arial", 16, "normal"))
+
+    move_ball(my_turtle=ball_turtle, my_angle=angle)
+    screen.update()
+    screen.ontimer(lambda: move_ball(ball_turtle, angle), 20)
+
+    # Check if the winning condition is true
+    winning = verify_winning()
+    if winning is True:
+        # Show winning message to the user.
+        messagebox.showinfo("You won!", "Congratulations you won the game!!!")
+        print(f"Winning is {winning}")
+        # return  # Exits the move_ball() so the ball stops in screen
+
 # Keep the window open
 screen.mainloop()
+
