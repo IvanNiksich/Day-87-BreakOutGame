@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5dab68cb-d654-478b-831e-5d2980c4e380" name="Changes" comment="Blocks disappear correctly, added bounce on bar and condition of winning when there are no more blocks.">
+    <list default="true" id="5dab68cb-d654-478b-831e-5d2980c4e380" name="Changes" comment="Reorganized the code flow, added lives lost, working on restarting game on lose.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -125,7 +125,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732641477695</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Reorganized the code flow, added lives lost, working on restarting game on lose.">
+      <option name="closed" value="true" />
+      <created>1732727848027</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1732727848027</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -134,6 +142,7 @@
     <MESSAGE value="Bouncing rules added." />
     <MESSAGE value="Added move_ball and started on check restrictions." />
     <MESSAGE value="Blocks disappear correctly, added bounce on bar and condition of winning when there are no more blocks." />
-    <option name="LAST_COMMIT_MESSAGE" value="Blocks disappear correctly, added bounce on bar and condition of winning when there are no more blocks." />
+    <MESSAGE value="Reorganized the code flow, added lives lost, working on restarting game on lose." />
+    <option name="LAST_COMMIT_MESSAGE" value="Reorganized the code flow, added lives lost, working on restarting game on lose." />
   </component>
 </project>

@@ -34,6 +34,9 @@
 import turtle
 from tkinter import messagebox
 import datetime as dt
+import os
+import sys
+import random
 
 
 # DEFINITIONS:
@@ -146,8 +149,12 @@ def move_ball(my_turtle, my_angle):
     # Draw new ball in new position
     draw_ball(BALL_RADIUS, BALL_COLOUR, my_turtle)
     screen.update()
-
     return
+
+
+def choose_angle():
+    values = [20, 30, 40, 50, 60]
+    return random.choice(values)
 
 
 def check_restrictions(my_turtle, my_angle, my_lives):
@@ -179,20 +186,19 @@ def check_restrictions(my_turtle, my_angle, my_lives):
         my_lives -= 1
 
         if my_lives < 0:
-            messagebox.showinfo("You lost", "You run out of lives. Try again.")
+            # messagebox.showinfo("You lost", "You run out of lives. Try again.")
             # Restart the game initial conditions to play a new game
-            quit()
+            game_over("Game Over", "You lost all your lives! Do you want to restart?")
 
         # Print lives remaining
         lives_turtle.clear()
         lives_turtle.write(f"Lives: {my_lives}", align="center", font=("Arial", 16, "normal"))
 
-        my_angle = 30
+        my_angle = choose_angle()
         ball_turtle.clear()
         bar_turtle.clear()
         initial_draw_ball()
         initial_draw_bar()
-
 
         return my_angle, my_lives
 
@@ -273,8 +279,24 @@ def draw_blocks():
 def initial_draw_ball():
     turtle_move(0, -((HEIGHT / 2) - 80), ball_turtle)
     draw_ball(ball_radius=BALL_RADIUS, ball_colour=BALL_COLOUR, my_turtle=ball_turtle)
-    ball_turtle.setheading(30)
+    initial_angle = choose_angle()
+    ball_turtle.setheading(initial_angle)
     return
+
+
+def game_over(title, text):
+    response = messagebox.askyesno(title, text)
+    if response:  # If the user chooses "Yes"
+        restart_script()
+    else:
+        sys.exit()
+
+
+def restart_script():
+    """Restarts the game."""
+    # To work it must be deployed in a script.
+    python = sys.executable
+    os.execl(python, python, *sys.argv)  # Restart the script
 
 
 # MAIN
@@ -382,7 +404,7 @@ screen.onkeypress(move_right, "Right")  # Bind the right arrow key to the move_r
 
 winning = False
 while not winning:
-    delay(20)
+    delay(30)
 
     angle = ball_turtle.heading()
     # Check if the ball is overlapping with edges, top, bottom, or the bar. And modify angle accordingly.
@@ -400,7 +422,8 @@ while not winning:
     winning = verify_winning()
     if winning is True:
         # Show winning message to the user.
-        messagebox.showinfo("You won!", "Congratulations you won the game!!!")
+        # messagebox.showinfo("You won!", "Congratulations you won the game!!!")
+        game_over("You won!", "You have won the game! Do you want to play again?")
         print(f"Winning is {winning}")
         # return  # Exits the move_ball() so the ball stops in screen
 
